@@ -24,9 +24,22 @@ If you add database connection properties, the application will create 10 task e
 
 NOTE: Currently only supports `mysql`
 
+To create 100 task definitions with 1000 task executions run the following:
+```bash
+ java -jar target/perftask-0.0.1-SNAPSHOT.jar --org.springframework.cloud.dataflow.task.performance.taskDefinitionCount=100 --org.springframework.cloud.dataflow.task.performance.taskExecutionCount=1000
+```
 
 #### Configuration
 * taskPrefix - The prefix to be used for task definition names. Defaults to `perfTestTask`.
 * taskDefinitionCount - Then number of definitions to create. Defaults to `10`.
 * addTaskExecutions - If true task executions will be created by launching tasks. Defaults to `true`.
-* taskExecutionCount -The number of task executions to be inserted into the task execution table.  Defaults to `10`.
+* taskExecutionCount - The number of task executions to be inserted into the task execution table.  Defaults to `10`.
+* cleanup - If `true` prevents the loading of the database and deletes all task definitions with task name starting with `taskPrefix` and their associated task executions.   Defaults to `false`.
+
+#### Cleanup
+To remove all task definitions with task name starting with `taskPrefix` and their associated task executions. Set the `cleanup` flag to true.
+For example:
+
+```bash
+java -jar target/perftask-0.0.1-SNAPSHOT.jar --org.springframework.cloud.dataflow.task.performance.cleanup=true
+```

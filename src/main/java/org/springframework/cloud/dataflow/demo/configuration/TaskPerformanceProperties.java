@@ -37,6 +37,11 @@ public class TaskPerformanceProperties {
 	private Boolean addTaskExecutions = true;
 
 	/**
+	 * Removes all task definitions with a task name starting with the prefix and their associated executions.
+	 */
+	private Boolean isCleanup = false;
+
+	/**
 	 * The number of task executions to be inserted into the task execution table.
 	 */
 	private Integer taskExecutionCount = 10;
@@ -79,5 +84,13 @@ public class TaskPerformanceProperties {
 
 	public void setAddTaskExecutions(Boolean addTaskExecutions) {
 		this.addTaskExecutions = addTaskExecutions;
+	}
+
+	public Boolean getCleanup() {
+		return isCleanup;
+	}
+
+	public void setCleanup(Boolean cleanup) {
+		isCleanup = cleanup;
 	}
 }

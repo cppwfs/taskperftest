@@ -44,12 +44,17 @@ public class TaskPerformanceConfiguration {
 		return new ApplicationRunner() {
 			@Override
 			public void run(ApplicationArguments args) {
-				TaskUtils.createTaskDefinitions(properties.getTaskPrefix(), properties.getTaskDefinitionCount(), dataFlowOperations);
-				if (properties.getAddTaskExecutions()) {
-					if (dataSource != null) {
-						TaskUtils.dbInsertTaskExecutions(properties.getTaskExecutionCount(),
-								TaskUtils.getTaskDefinitionsByPrefix(properties.getTaskPrefix(), dataFlowOperations),
-								dataSource);
+				if(properties.getCleanup()) {
+					TaskUtils.cleanup(properties.getTaskPrefix(), dataFlowOperations);
+				}
+				else {
+					TaskUtils.createTaskDefinitions(properties.getTaskPrefix(), properties.getTaskDefinitionCount(), dataFlowOperations);
+					if (properties.getAddTaskExecutions()) {
+						if (dataSource != null) {
+							TaskUtils.dbInsertTaskExecutions(properties.getTaskExecutionCount(),
+									TaskUtils.getTaskDefinitionsByPrefix(properties.getTaskPrefix(), dataFlowOperations),
+									dataSource);
+						}
 					}
 				}
 			}

@@ -29,6 +29,7 @@ import org.springframework.batch.item.database.support.DataFieldMaxValueIncremen
 import org.springframework.batch.item.database.support.DefaultDataFieldMaxValueIncrementerFactory;
 import org.springframework.cloud.dataflow.rest.client.DataFlowClientException;
 import org.springframework.cloud.dataflow.rest.client.DataFlowOperations;
+import org.springframework.cloud.dataflow.rest.client.TaskOperations;
 import org.springframework.cloud.dataflow.rest.client.dsl.task.Task;
 import org.springframework.cloud.dataflow.rest.client.dsl.task.TaskBuilder;
 import org.springframework.cloud.task.repository.support.DatabaseType;
@@ -100,14 +101,15 @@ public class TaskUtils {
 
 	/**
 	 * Inserts the specified number of task executions into the task_execution table.
-	 * @param numberOfExecutions Number of task executions to insert.
+	 * @param numberOfTaskExecutions Number of task executions to insert.
 	 * @param taskDefinitions A list of task definitions to use for populating task the task name and task description.
 	 * @param dataSource The dataSource to use for inserting the data.
 	 */
-	public static void dbInsertTaskExecutions(int numberOfExecutions, List<Task> taskDefinitions, DataSource dataSource) {
+	public static void dbInsertTaskExecutions(int numberOfTaskExecutions, List<Task> taskDefinitions, DataSource dataSource) {
+		logger.info(String.format("Creating %s task executions", numberOfTaskExecutions));
 		DataFieldMaxValueIncrementer incrementer = getIncrementer(dataSource);
 		int sizeOfTaskDefinitions = taskDefinitions.size();
-		for (int i = 0; i < numberOfExecutions; i++) {
+		for (int i = 0; i < numberOfTaskExecutions; i++) {
 			long executionid = incrementer.nextLongValue();
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
 			jdbcTemplate.update("INSERT INTO TASK_EXECUTION (TASK_EXECUTION_ID," +
@@ -117,6 +119,17 @@ public class TaskUtils {
 					executionid, new Date(), new Date(), taskDefinitions.get(i % sizeOfTaskDefinitions).getTaskName(),
 					0, null, null, new Date(), taskDefinitions.get(i % sizeOfTaskDefinitions).getTaskName(), null);
 		}
+	}
+
+	/**
+	 * Removes all task definitions that has a task name that starts with the taskName prefix and their associated task executions.
+	 * @param taskNamePrefix the prefix to determine if a task definition should be deleted.
+	 * @param dataFlowOperations The dataflowOperations instance used to connect to dataflow.
+	 */
+	public static void cleanup(String taskNamePrefix, DataFlowOperations dataFlowOperations) {
+		List<Task> taskDefinitions = getTaskDefinitionsByPrefix(taskNamePrefix, dataFlowOperations);
+		TaskOperations taskOperations = dataFlowOperations.taskOperations();
+		taskDefinitions.stream().forEach(task -> taskOperations.destroy(task.getTaskName(), true));
 	}
 
 	/**
