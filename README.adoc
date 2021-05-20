@@ -22,6 +22,9 @@ java -jar target/perftask-0.0.1-SNAPSHOT.jar
 
 If you add database connection properties, the application will create 10 task executions. (1 for each task definition)
 
+NOTE: Currently only supports `mysql`
+
+
 #### Configuration
 * taskPrefix - The prefix to be used for task definition names. Defaults to `perfTestTask`.
 * taskDefinitionCount - Then number of definitions to create. Defaults to `10`.
