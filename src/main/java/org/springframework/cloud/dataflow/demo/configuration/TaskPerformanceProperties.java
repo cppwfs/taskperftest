@@ -42,6 +42,16 @@ public class TaskPerformanceProperties {
 	private Boolean isCleanup = false;
 
 	/**
+	 * If true task executions will be added via task launch request to SCDF.  Default is false.
+	 */
+	private Boolean isLaunchTasks = false;
+
+	/**
+	 * The maximum wait time (in minutes) that the perf tests should wait for task execution creation to complete. Default is 15 minutes.
+	 */
+	private Integer maxTaskExecutionWaitMinutes = 15;
+
+	/**
 	 * The number of task executions to be inserted into the task execution table.
 	 */
 	private Integer taskExecutionCount = 10;
@@ -62,22 +72,6 @@ public class TaskPerformanceProperties {
 		this.taskDefinitionCount = taskDefinitionCount;
 	}
 
-	public Boolean getLaunchTasks() {
-		return addTaskExecutions;
-	}
-
-	public void setLaunchTasks(Boolean launchTasks) {
-		addTaskExecutions = launchTasks;
-	}
-
-	public Integer getTaskExecutionCount() {
-		return taskExecutionCount;
-	}
-
-	public void setTaskExecutionCount(Integer taskExecutionCount) {
-		this.taskExecutionCount = taskExecutionCount;
-	}
-
 	public Boolean getAddTaskExecutions() {
 		return addTaskExecutions;
 	}
@@ -92,5 +86,29 @@ public class TaskPerformanceProperties {
 
 	public void setCleanup(Boolean cleanup) {
 		isCleanup = cleanup;
+	}
+
+	public Boolean getLaunchTasks() {
+		return isLaunchTasks;
+	}
+
+	public void setLaunchTasks(Boolean launchTasks) {
+		isLaunchTasks = launchTasks;
+	}
+
+	public Integer getMaxTaskExecutionWaitMinutes() {
+		return maxTaskExecutionWaitMinutes;
+	}
+
+	public void setMaxTaskExecutionWaitMinutes(Integer maxTaskExecutionWaitMinutes) {
+		this.maxTaskExecutionWaitMinutes = maxTaskExecutionWaitMinutes;
+	}
+
+	public Integer getTaskExecutionCount() {
+		return taskExecutionCount;
+	}
+
+	public void setTaskExecutionCount(Integer taskExecutionCount) {
+		this.taskExecutionCount = taskExecutionCount;
 	}
 }

@@ -50,10 +50,15 @@ public class TaskPerformanceConfiguration {
 				else {
 					TaskUtils.createTaskDefinitions(properties.getTaskPrefix(), properties.getTaskDefinitionCount(), dataFlowOperations);
 					if (properties.getAddTaskExecutions()) {
-						if (dataSource != null) {
-							TaskUtils.dbInsertTaskExecutions(properties.getTaskExecutionCount(),
-									TaskUtils.getTaskDefinitionsByPrefix(properties.getTaskPrefix(), dataFlowOperations),
-									dataSource);
+						if(properties.getLaunchTasks()) {
+							TaskUtils.launchTasks(properties.getTaskExecutionCount(),
+									properties.getMaxTaskExecutionWaitMinutes(),
+									TaskUtils.getTaskDefinitionsByPrefix(properties.getTaskPrefix(), dataFlowOperations));
+						}
+						else if (dataSource != null) {
+								TaskUtils.dbInsertTaskExecutions(properties.getTaskExecutionCount(),
+										TaskUtils.getTaskDefinitionsByPrefix(properties.getTaskPrefix(), dataFlowOperations),
+										dataSource);
 						}
 					}
 				}

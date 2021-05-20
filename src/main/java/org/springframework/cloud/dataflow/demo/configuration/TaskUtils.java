@@ -16,12 +16,15 @@
 
 package org.springframework.cloud.dataflow.demo.configuration;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
+import org.awaitility.Awaitility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,13 +94,22 @@ public class TaskUtils {
 	 * @param numberOfLaunches Number of launches
 	 * @param taskDefinitions List of task definitions to be used for task launches.
 	 */
-	public static void launchTasks(int numberOfLaunches, List<Task> taskDefinitions) {
-		int numberOfDefinitions = taskDefinitions.size();
-		for (int i = 0; i < numberOfLaunches; i++) {
-			taskDefinitions.get(i % numberOfDefinitions).launch();
-		}
-	}
+	public static void launchTasks(int numberOfLaunches, int maxWaitTimeInMinutes, List<Task> taskDefinitions) {
+		logger.info(String.format("Launching %s task executions", numberOfLaunches));
 
+		Awaitility.setDefaultPollInterval(10, TimeUnit.MILLISECONDS);
+		Awaitility.setDefaultPollDelay(Duration.ZERO);
+		Awaitility.setDefaultTimeout(Duration.ofMinutes(maxWaitTimeInMinutes));
+		// Wait until all tasks complete
+		Awaitility.await().until(() -> {
+			int numberOfDefinitions = taskDefinitions.size();
+			int currentTaskCount;
+			for (currentTaskCount = 0; currentTaskCount < numberOfLaunches; currentTaskCount++) {
+				taskDefinitions.get(currentTaskCount % numberOfDefinitions).launch();
+			}
+			return currentTaskCount == numberOfLaunches;
+		});
+	}
 
 	/**
 	 * Inserts the specified number of task executions into the task_execution table.
@@ -128,6 +140,7 @@ public class TaskUtils {
 	 */
 	public static void cleanup(String taskNamePrefix, DataFlowOperations dataFlowOperations) {
 		List<Task> taskDefinitions = getTaskDefinitionsByPrefix(taskNamePrefix, dataFlowOperations);
+		logger.info(String.format("Removing %s task definitions starting with the name %s and the associated task executions", taskDefinitions.size(), taskNamePrefix));
 		TaskOperations taskOperations = dataFlowOperations.taskOperations();
 		taskDefinitions.stream().forEach(task -> taskOperations.destroy(task.getTaskName(), true));
 	}

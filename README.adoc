@@ -35,6 +35,8 @@ To create 100 task definitions with 1000 task executions run the following:
 * addTaskExecutions - If true task executions will be created by launching tasks. Defaults to `true`.
 * taskExecutionCount - The number of task executions to be inserted into the task execution table.  Defaults to `10`.
 * cleanup - If `true` prevents the loading of the database and deletes all task definitions with task name starting with `taskPrefix` and their associated task executions.   Defaults to `false`.
+* launchTasks - If true task executions will be added via task launch request to SCDF.  Default is false.
+* maxTaskExecutionWaitMinutes - Used with launchTasks is true.  The maximum wait time (in minutes) that the perf tests should wait for task launches to complete. Default is 15 minutes.
 
 #### Cleanup
 To remove all task definitions with task name starting with `taskPrefix` and their associated task executions. Set the `cleanup` flag to true.
